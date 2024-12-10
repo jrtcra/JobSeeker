@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE_URL } from '../../config'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSort, faSortUp, faSortDown, faFilter } from '@fortawesome/free-solid-svg-icons'
 import StatusOptions from './StatusOptions'
 import axios from 'axios'
 import './Home.css'
@@ -47,6 +49,10 @@ const Home = () => {
     const [applications, setApplications] = useState([])
     const [isAdding, setIsAdding] = useState(false)
     const [isEditing, setIsEditing] = useState(null) // Track which application is being edited
+    const [sortOrder, setSortOrder] = useState(null)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [showDropdown, setShowDropdown] = useState(false)
+    const [filterStatus, setFilterStatus] = useState('')
     const [newApplication, setNewApplication] = useState({
         name: "",
         company: "",
@@ -176,22 +182,110 @@ const Home = () => {
         })
     }
 
+    const sortApplicationsByDate = () => {
+        const newOrder = sortOrder === "asc" ? "desc" : "asc"
+        const sortedApplications = [...applications].sort((a, b) => {
+            if (newOrder === "asc") {
+                return new Date(a.date) - new Date(b.date)
+            } else {
+                return new Date(b.date) - new Date(a.date)
+            }
+        })
+        setApplications(sortedApplications)
+        setSortOrder(newOrder)
+    }
+
+    const handleStatusFilterChange = (status) => {
+        setFilterStatus(status)
+        setShowDropdown(false)
+    }
+
+    const filteredApplications = applications.filter((app) => {
+        const matchesSearch = searchQuery
+            ? app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              app.company.toLowerCase().includes(searchQuery.toLowerCase())
+            : true
+        const matchesStatus = filterStatus ? app.status === filterStatus : true
+        return matchesSearch && matchesStatus
+    })
+
     return (
         <div className="home-container">
+            <h1 className="component-title">My Job Applications</h1>
+            <input
+                    type="text"
+                    placeholder="Search by Job Title or Company Name"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                />
             <table className="table">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Company</th>
-                        <th>Date Applied</th>
-                        <th>Status</th>
+                        <th>
+                            Date Applied
+                            <button
+                                onClick={sortApplicationsByDate}
+                                className="sort-button"
+                                style={{ marginLeft: "5px", border: "none", background: "none" }}
+                            >
+                                {sortOrder === "asc" ? (
+                                    <FontAwesomeIcon icon={faSortUp} />
+                                ) : sortOrder === "desc" ? (
+                                    <FontAwesomeIcon icon={faSortDown} />
+                                ) : (
+                                    <FontAwesomeIcon icon={faSort} />
+                                )}
+                            </button>
+                        </th>
+                        <th>
+                            Status
+                            <div
+                                className="status-filter-container"
+                                onMouseEnter={() => setShowDropdown(true)}
+                                onMouseLeave={() => setShowDropdown(false)}
+                                onClick={() => setShowDropdown(!showDropdown)} // Toggle dropdown on click
+                            >
+                                <FontAwesomeIcon
+                                    icon={faFilter}
+                                    className="filter-icon"
+                                />
+                                {showDropdown && (
+                                    <div className="dropdown-menu">
+                                        <div
+                                            onClick={() =>
+                                                handleStatusFilterChange('')
+                                            }
+                                            className="dropdown-item"
+                                        >
+                                            All
+                                        </div>
+                                        {StatusOptions.map((option) => (
+                                            <div
+                                                key={option.value}
+                                                onClick={() =>
+                                                    handleStatusFilterChange(
+                                                        option.value
+                                                    )
+                                                }
+                                                className="dropdown-item"
+                                            >
+                                                {option.label}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </th>
                         <th>Webpage</th>
                         <th>Notes</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {applications.map((app, index) => {
+                    {filteredApplications.map((app, index) => {
                         let domain = null
                         if (app.webpage) {
                             domain = extractDomain(app.webpage)
@@ -328,7 +422,7 @@ const Home = () => {
                                 >
                                     +
                                 </button>
-                                <span className="add-text"> Add new task</span>
+                                <span className="add-text"> Add new Application</span>
                             </td>
                         </tr>
                     )}
