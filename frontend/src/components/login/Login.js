@@ -17,7 +17,7 @@ const Login = () => {
         e.preventDefault()
 
         try {
-            const res = await axios.post('/login', { username, password })
+            const res = await axios.post('/api/user/login', { username, password })
             if (res.status === 200) {
                 console.log('Login successful')
                 navigate('/home')

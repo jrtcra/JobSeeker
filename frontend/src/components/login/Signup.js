@@ -19,7 +19,7 @@ const Signup = () => {
         e.preventDefault();
 
         try {
-            const res = await axios.post('/signup', { username, email, password });
+            const res = await axios.post('/api/user/register', { username, email, password });
             if (res.status === 201) {
                 console.log('Signup successful');
                 navigate('/login'); // Redirect to login after successful signup
