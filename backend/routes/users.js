@@ -25,14 +25,16 @@ module.exports = function(router) {
             }
 
             // Create JWT token
-            const token = jwt.sign(
-                { id: user._id, username: user.username },
-                process.env.JWT_SECRET,
-                { expiresIn: '24h' }
-            );
+            // const token = jwt.sign(
+            //     { id: user._id, username: user.username },
+            //     process.env.JWT_SECRET,
+            //     { expiresIn: '24h' }
+            // );
 
-            res.status(200).send(formatResponse("Successfully logged in", { token, user }));
+            // res.status(200).send(formatResponse("Successfully logged in", { token, user }));
+            res.status(200).send(formatResponse("Successfully logged in", { user }));
         } catch(error) {
+            console.log(error);
             res.status(500).send(formatResponse("Error logging in", error));
         }
     });
@@ -40,10 +42,12 @@ module.exports = function(router) {
     // POST register a new user
     router.route('/user/register').post(async(req, res) => {
         try {
+            // console.log(req);
             const { username, email, password } = req.body;
-
+            console.log("Username: " + username);
             // Check if user already exists
             const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+            console.log("Existing user?: " + existingUser);
             if (existingUser) {
                 return res.status(400).send(formatResponse("User already exists", null));
             }
@@ -70,33 +74,40 @@ module.exports = function(router) {
             await user.save();
 
             // Create JWT token
-            const token = jwt.sign(
-                { id: user._id, email: user.email },
-                process.env.JWT_SECRET,
-                { expiresIn: '24h' }
-            );
+            // const token = jwt.sign(
+            //     { id: user._id, email: user.email },
+            //     process.env.JWT_SECRET,
+            //     { expiresIn: '24h' }
+            // );
 
-            res.status(201).send(formatResponse("Successfully registered", { token, user }));
+            // res.status(201).send(formatResponse("Successfully registered", { token, user }));
+            res.status(201).send(formatResponse("Successfully registered", { user }));
         } catch(error) {
             res.status(500).send(formatResponse("Error registering user", error));
+            console.log(error);
         }
     });
 
     // GET the profile details of a user
     router.route('/user/profile').get(async(req, res) => {
         try {
-            const userId = req.user.id;
+            const { username } = req.query;
+            console.log(username);
+            if (!username) {
+                return res.status(400).send({ message: 'Username query parameter is required' });
+            }
 
-            const user = await User.findById(userId)
+            const user = await User.findOne({username})
                 .select('-password')  // Exclude password from the response
                 .populate('applications');  // Include application details
 
             if (!user) {
                 return res.status(404).send(formatResponse("User not found", null));
             }
-
+            console.log(user);
             res.status(200).send(formatResponse("Successfully retrieved user profile", user));
         } catch(error) {
+            console.log(error);
             res.status(500).send(formatResponse("Error retrieving user information", error));
         }
     });
@@ -240,24 +251,32 @@ module.exports = function(router) {
     // PATCH user information
     router.route('/user').patch(async(req, res) => {
         try {
-            const userId = req.user.id;
-            const updates = req.body;
+            console.log(req.body);
+            const { original_username, new_info } = req.body;
+            const user_before = await User.findOne({ original_username });
+            if (!user_before) {
+                console.log(req.body);
+                return res.status(404).send(formatResponse("Original user not found", null));
+            }
 
             // Don't allow password updates through this endpoint
             delete updates.password;
 
             const user = await User.findByIdAndUpdate(
-                userId,
-                updates,
+                user_before._id,
+                new_info,
                 { new: true, select: '-password' }
             );
 
             if (!user) {
+                console.log("The Invalid User: " + username);
+                console.log(user1);
                 return res.status(404).send(formatResponse("User not found", null));
             }
 
             res.status(200).send(formatResponse("Successfully updated user", user));
         } catch(error) {
+            console.log(error);
             res.status(500).send(formatResponse("Error updating user information", error));
         }
     });

@@ -1,7 +1,18 @@
 import React, { useState } from 'react'
-
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router'
 
 const Home = () => {
+  const location = useLocation();
+  const { username } = location.state || {};
+  const navigate = useNavigate();
+  const navigateToProfile = () => {
+      console.log("username: " + username);
+      navigate('/profile', {state: {username}});
+  };
+  const logOut = () => {
+    navigate('/login');
+  };
   const applications = [
     {
       name: "Data Science Intern",
@@ -50,7 +61,18 @@ const Home = () => {
   ]
 
   return (
+    <div>
+    <div style={headerContainerStyle}>
+        <h1 style={{ margin: "20px" }}>JobTracker</h1>
+        <button style={{ margin: "20px" }} onClick={logOut}>
+          Log Out
+        </button>
+      </div>
     <div style={{ padding: "20px" }}>
+      
+      <h2>You have [2] more applications to reach your weekly goal!</h2>
+      <button onClick={navigateToProfile}>Profile</button>
+      <button>Stats</button>
       <table
         style={{
           width: "100%",
@@ -99,8 +121,19 @@ const Home = () => {
         </tbody>
       </table>
     </div>
+    </div>
   )
 }
+
+const headerContainerStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  backgroundColor: '#4285f4',
+  alignItems: "center",
+  padding: "10px 0",
+  borderBottom: "1px solid #ddd",
+};
+
 
 const headerStyle = {
   backgroundColor: "#f4f4f4",

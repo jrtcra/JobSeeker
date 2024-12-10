@@ -18,7 +18,7 @@ const Login = () => {
         e.preventDefault()
 
         try {
-            const res = await axios.post(`${API_BASE_URL}/login`, { username, password })
+            const res = await axios.post(`${API_BASE_URL}/user/login`, { username, password })
             if (res.status === 200) {
                 console.log('Login successful')
 
@@ -27,7 +27,7 @@ const Login = () => {
                     sessionStorage.setItem('authToken', token)
                 }
 
-                navigate('/home')
+                navigate('/home', { state: { username } });
             } else {
                 setIsLoginErrorVisible(true)
             }
