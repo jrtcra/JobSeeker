@@ -13,7 +13,8 @@ var ApplicationSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: "pending"
+        enum: ["Applied", "Interview Scheduled", "Rejected", "Offered"], // Allowed values
+        default: "Applied"
     },
     link: {
         type: String,
