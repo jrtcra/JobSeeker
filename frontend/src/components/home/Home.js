@@ -10,9 +10,7 @@ const testApplications = [
         company: "Meta",
         status: "Applied",
         statusColor: StatusOptions.find(option => option.value === "Applied")?.color,
-        webpage: {
-            link: "https://meta.com/careers",
-        },
+        webpage: "https://meta.com/careers",
         notes: "",
         date: "2024-12-01",
     },
@@ -21,9 +19,7 @@ const testApplications = [
         company: "Google",
         status: "Interview Scheduled",
         statusColor: StatusOptions.find(option => option.value === "Interview Scheduled")?.color,
-        webpage: {
-            link: "https://google.com/careers/application",
-        },
+        webpage: "https://google.com/careers/application",
         notes: "On 12/12/24",
         date: "2024-11-15",
     },
@@ -32,9 +28,7 @@ const testApplications = [
         company: "IBM",
         status: "Rejected",
         statusColor: StatusOptions.find(option => option.value === "Rejected")?.color,
-        webpage: {
-            link: "https://ibm.com/careerprofile",
-        },
+        webpage: "https://ibm.com/careerprofile",
         notes: "",
         date: "2024-10-20",
     },
@@ -43,9 +37,7 @@ const testApplications = [
         company: "CrowdStrike",
         status: "Applied",
         statusColor: StatusOptions.find(option => option.value === "Applied")?.color,
-        webpage: {
-            link: "https://crowdstrike.com/interns",
-        },
+        webpage: "https://crowdstrike.com/interns",
         notes: "Send email to HR",
         date: "2024-11-01",
     },
@@ -61,9 +53,7 @@ const Home = () => {
         date: "",
         status: "",
         statusColor: "",
-        webpage: {
-            link: "",
-        },
+        webpage: "",
         notes: "",
     })
 
@@ -102,8 +92,7 @@ const Home = () => {
             newApplication.name &&
             newApplication.company &&
             newApplication.date &&
-            newApplication.status &&
-            newApplication.webpage.link
+            newApplication.status
         ) {
             // TODO: make API request to save the new application
             setApplications([...applications, { ...newApplication }])
@@ -113,9 +102,7 @@ const Home = () => {
                 date: "",
                 status: "",
                 statusColor: "",
-                webpage: {
-                    link: "",
-                },
+                webpage: "",
                 notes: "",
             })
             setIsAdding(false)
@@ -157,9 +144,7 @@ const Home = () => {
             date: "",
             status: "",
             statusColor: "",
-            webpage: {
-                link: "",
-            },
+            webpage: "",
             notes: "",
         })
         // TODO: make API request to update the application
@@ -173,9 +158,7 @@ const Home = () => {
             date: "",
             status: "",
             statusColor: "",
-            webpage: {
-                link: "",
-            },
+            webpage: "",
             notes: "",
         })
     }
@@ -188,9 +171,7 @@ const Home = () => {
             date: "",
             status: "",
             statusColor: "",
-            webpage: {
-                link: "",
-            },
+            webpage: "",
             notes: "",
         })
     }
@@ -211,7 +192,11 @@ const Home = () => {
                 </thead>
                 <tbody>
                     {applications.map((app, index) => {
-                        const domain = extractDomain(app.webpage.link)
+                        let domain = null
+                        if (app.webpage) {
+                            domain = extractDomain(app.webpage)
+                        }
+
                         const faviconUrl = domain === "google.com"
                             ? `https://www.faviconextractor.com/favicon/${domain}?larger=true`
                             : `https://www.faviconextractor.com/favicon/${domain}`
@@ -262,14 +247,11 @@ const Home = () => {
                                 <td>
                                     <input
                                         type="text"
-                                        value={newApplication.webpage.link}
+                                        value={newApplication.webpage}
                                         onChange={(e) =>
                                             setNewApplication({
                                                 ...newApplication,
-                                                webpage: {
-                                                    ...newApplication.webpage,
-                                                    link: e.target.value,
-                                                },
+                                                webpage: e.target.value,
                                             })
                                         }
                                     />
@@ -306,8 +288,8 @@ const Home = () => {
                                     </span>
                                 </td>
                                 <td>
-                                    <a
-                                        href={app.webpage.link}
+                                    {domain && <a
+                                        href={app.webpage}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="webpage-link"
@@ -316,8 +298,8 @@ const Home = () => {
                                             src={faviconUrl}
                                             alt={`${app.company} Favicon`}
                                         />
-                                        {app.webpage.link}
-                                    </a>
+                                        {app.webpage}
+                                    </a>}
                                 </td>
                                 <td>{app.notes}</td>
                                 <td>
@@ -403,7 +385,7 @@ const Home = () => {
                                 <input
                                     type="text"
                                     placeholder="Webpage Link"
-                                    value={newApplication.webpage.link}
+                                    value={newApplication.webpage}
                                     onChange={(e) =>
                                         setNewApplication({
                                             ...newApplication,
