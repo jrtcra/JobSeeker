@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import axios from 'axios'
 import { useNavigate } from 'react-router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { API_BASE_URL } from '../../config'
+import axios from 'axios'
 import './Login.css'
 
 const Login = () => {
@@ -17,9 +18,15 @@ const Login = () => {
         e.preventDefault()
 
         try {
-            const res = await axios.post('/api/user/login', { username, password })
+            const res = await axios.post(`${API_BASE_URL}/login`, { username, password })
             if (res.status === 200) {
                 console.log('Login successful')
+
+                const { token } = res.data.data
+                if (token) {
+                    sessionStorage.setItem('authToken', token)
+                }
+
                 navigate('/home')
             } else {
                 setIsLoginErrorVisible(true)
@@ -59,7 +66,7 @@ const Login = () => {
                             onClick={() => setVisible(!visible)}
                             aria-label={visible ? 'Hide password' : 'Show password'}
                         >
-                            <FontAwesomeIcon icon={visible ? faEyeSlash : faEye} />
+                            <FontAwesomeIcon icon={visible ? faEye : faEyeSlash} />
                         </button>
                     </div>
                 </div>

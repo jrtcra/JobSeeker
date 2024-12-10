@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { API_BASE_URL } from '../../config'
 import './Profile.css'
 
 const Profile = () => {
@@ -13,7 +14,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await axios.get('/profile', {
+                const res = await axios.get(`${API_BASE_URL}/profile/:id`, {
                     withCredentials: true,
                 });
 
@@ -46,7 +47,7 @@ const Profile = () => {
     const handleSave = async () => {
         try {
             const res = await axios.patch(
-                '/profile',
+                `${API_BASE_URL}/profile`,
                 { username: formData.username, email: formData.email },
                 { withCredentials: true }
             );

@@ -1,40 +1,41 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import './Login.css';
+import React, { useState } from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { API_BASE_URL } from '../../config'
+import './Login.css'
 import './Signup.css'
 
 const Signup = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [visible, setVisible] = useState(false);
-    const [isSignupErrorVisible, setIsSignupErrorVisible] = useState(false);
+    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [visible, setVisible] = useState(false)
+    const [isSignupErrorVisible, setIsSignupErrorVisible] = useState(false)
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
         try {
-            const res = await axios.post('/api/user/register', { username, email, password });
+            const res = await axios.post(`${API_BASE_URL}/register`, { username, email, password })
             if (res.status === 201) {
-                console.log('Signup successful');
-                navigate('/login'); // Redirect to login after successful signup
+                console.log('Signup successful')
+                navigate('/login') // Redirect to login after successful signup
             } else {
-                setIsSignupErrorVisible(true);
+                setIsSignupErrorVisible(true)
             }
         } catch (err) {
-            console.error('Server error:', err);
-            setIsSignupErrorVisible(true);
+            console.error('Server error:', err)
+            setIsSignupErrorVisible(true)
         }
-    };
+    }
 
-    const handleUsernameChange = (e) => setUsername(e.target.value);
-    const handleEmailChange = (e) => setEmail(e.target.value);
-    const handlePasswordChange = (e) => setPassword(e.target.value);
+    const handleUsernameChange = (e) => setUsername(e.target.value)
+    const handleEmailChange = (e) => setEmail(e.target.value)
+    const handlePasswordChange = (e) => setPassword(e.target.value)
 
     return (
         <div className='login-form'>
@@ -62,7 +63,7 @@ const Signup = () => {
                             onClick={() => setVisible(!visible)}
                             aria-label={visible ? 'Hide password' : 'Show password'}
                         >
-                            <FontAwesomeIcon icon={visible ? faEyeSlash : faEye} />
+                            <FontAwesomeIcon icon={visible ? faEye : faEyeSlash} />
                         </button>
                     </div>
                 </div>
@@ -72,7 +73,7 @@ const Signup = () => {
                 <button type='submit'>Signup</button>
             </form>
         </div>
-    );
-};
+    )
+}
 
-export default Signup;
+export default Signup
