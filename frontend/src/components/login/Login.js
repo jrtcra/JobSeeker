@@ -17,7 +17,7 @@ const Login = () => {
         e.preventDefault()
 
         try {
-            const res = await axios.post('/login', { username, password })
+            const res = await axios.post('/api/user/login', { username, password })
             if (res.status === 200) {
                 console.log('Login successful')
                 navigate('/home')
@@ -59,7 +59,7 @@ const Login = () => {
                             onClick={() => setVisible(!visible)}
                             aria-label={visible ? 'Hide password' : 'Show password'}
                         >
-                            <FontAwesomeIcon icon={visible ? faEye : faEyeSlash} />
+                            <FontAwesomeIcon icon={visible ? faEyeSlash : faEye} />
                         </button>
                     </div>
                 </div>
