@@ -27,7 +27,7 @@ const Login = () => {
                     sessionStorage.setItem('authToken', token)
                 }
 
-                navigate('/home', { state: { username } });
+                navigate('/homepage', { state: { username } });
             } else {
                 setIsLoginErrorVisible(true)
             }

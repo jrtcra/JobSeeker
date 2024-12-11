@@ -45,9 +45,9 @@ const testApplications = [
     },
 ]
 
-const Home = () => {
-    const location = useLocation();
-    const { username } = location.state || {};
+const Home = ({ username }) => {
+    // const location = useLocation();
+    // const { username } = location.state || {};
     const navigate = useNavigate();
     const navigateToProfile = () => {
         console.log("username: " + username);
@@ -79,6 +79,7 @@ const Home = () => {
                     console.log(res.data.data);
                     if (res.data.data.length != 0) {
                         var apps = res.data.data;
+                        console.log(apps);
                         apps.forEach(function(curr_app) {
                             // Your logic here
                             curr_app.statusColor = StatusOptions.find(option => option.value === curr_app.status)?.color;
@@ -158,10 +159,12 @@ const Home = () => {
             statusColor: selectedStatus.color,
         })
     }
-    const deleteApplication = (index) => {
-        // const res = await axios.delete(`${API_BASE_URL}/application`, {
-        //     params: { username: username }
-        // });
+    const deleteApplication = async (index)  => {
+        const app_id = applications[index]._id;
+        const res = await axios.delete(`${API_BASE_URL}/application`, {
+            params: { username , app_id}
+        });
+        console.log(applications[index]._id);
         // Remove the application from the list
         setApplications(applications.filter((_, i) => i !== index))
         // TODO: make API request to delete the application
@@ -173,6 +176,7 @@ const Home = () => {
     }
 
     const saveEditedApplication = () => {
+        
         const updatedApplications = applications.map((app, index) =>
             index === isEditing ? newApplication : app
         )
@@ -351,12 +355,12 @@ const Home = () => {
                                 </td>
                                 <td>{app.notes}</td>
                                 <td>
-                                    <button
+                                    {/* <button
                                         className="edit-button"
                                         onClick={() => editApplication(index)}
                                     >
                                         Edit
-                                    </button>
+                                    </button> */}
                                     <button
                                         className="delete-button"
                                         onClick={() => deleteApplication(index)}

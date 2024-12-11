@@ -125,14 +125,18 @@ module.exports = function(router) {
     });
 
     // DELETE a specific job application
-    router.route('/application/:id').delete(async(req, res) => {
+    router.route('/application').delete(async(req, res) => {
         try {
-            const userId = req.user.id;
-            const applicationId = req.params.id;
-
+            const { username , app_id} = req.query;
+            const user = await User.findOne({ username });
+            const userId = user._id;
+            if (!user) {
+                console.log("Couldn't find user");
+                return res.status(401).send(formatResponse("Couldn't find user", null));
+            }
             // Find application and verify ownership
             const application = await Application.findOne({
-                _id: applicationId,
+                _id: app_id,
                 assignedUser: userId
             });
 
@@ -155,17 +159,19 @@ module.exports = function(router) {
 
             // Update user document
             await User.findByIdAndUpdate(userId, {
-                $pull: { applications: applicationId },
+                $pull: { applications: app_id },
                 $inc: statsUpdate,
                 $set: { 'statistics.lastUpdated': new Date() }
             });
 
             // Delete the application
-            await Application.findByIdAndDelete(applicationId);
+            await Application.findByIdAndDelete(app_id);
 
             res.status(200).send(formatResponse("Successfully deleted application", null));
         } catch(error) {
+            console.log(error);
             res.status(500).send(formatResponse("Error deleting application", error));
+            
         }
     });
 
