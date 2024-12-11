@@ -15,7 +15,7 @@ var ApplicationSchema = new mongoose.Schema({
         type: String,
         default: "pending"
     },
-    link: {
+    webpage: {
         type: String,
         default: ""
     },
@@ -24,10 +24,11 @@ var ApplicationSchema = new mongoose.Schema({
         default: ""
     },
     assignedUser: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Reference the User model
         required: true
     },
-    dataCreated: {
+    date: {
         type: Date,
         default: Date.now
     }

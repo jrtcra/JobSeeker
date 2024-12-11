@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router'
 import { API_BASE_URL } from '../../config'
 import StatusOptions from './StatusOptions'
 import axios from 'axios'
@@ -6,7 +8,7 @@ import './Home.css'
 
 const testApplications = [
     {
-        name: "Data Science Intern",
+        name: "Data Science Intern (PLACEHOLDER DATA)",
         company: "Meta",
         status: "Applied",
         statusColor: StatusOptions.find(option => option.value === "Applied")?.color,
@@ -15,7 +17,7 @@ const testApplications = [
         date: "2024-12-01",
     },
     {
-        name: "Software Engineer",
+        name: "Software Engineer (PLACEHOLDER DATA)",
         company: "Google",
         status: "Interview Scheduled",
         statusColor: StatusOptions.find(option => option.value === "Interview Scheduled")?.color,
@@ -24,7 +26,7 @@ const testApplications = [
         date: "2024-11-15",
     },
     {
-        name: "SWE Intern",
+        name: "SWE Intern (PLACEHOLDER DATA)",
         company: "IBM",
         status: "Rejected",
         statusColor: StatusOptions.find(option => option.value === "Rejected")?.color,
@@ -33,7 +35,7 @@ const testApplications = [
         date: "2024-10-20",
     },
     {
-        name: "Security Intern",
+        name: "Security Intern (PLACEHOLDER DATA)",
         company: "CrowdStrike",
         status: "Applied",
         statusColor: StatusOptions.find(option => option.value === "Applied")?.color,
@@ -44,6 +46,16 @@ const testApplications = [
 ]
 
 const Home = () => {
+    const location = useLocation();
+    const { username } = location.state || {};
+    const navigate = useNavigate();
+    const navigateToProfile = () => {
+        console.log("username: " + username);
+        navigate('/profile', {state: {username}});
+    };
+    const logOut = () => {
+        navigate('/login');
+    };
     const [applications, setApplications] = useState([])
     const [isAdding, setIsAdding] = useState(false)
     const [isEditing, setIsEditing] = useState(null) // Track which application is being edited
@@ -61,12 +73,20 @@ const Home = () => {
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const res = await axios.get(`${API_BASE_URL}/applications`, {
-                    withCredentials: true,
-                })
+                const res = await axios.get(`${API_BASE_URL}/applications`, { params: { username } })
 
                 if (res.status === 200) {
-                    setApplications(res.data.applications)
+                    console.log(res.data.data);
+                    if (res.data.data.length != 0) {
+                        var apps = res.data.data;
+                        apps.forEach(function(curr_app) {
+                            // Your logic here
+                            curr_app.statusColor = StatusOptions.find(option => option.value === curr_app.status)?.color;
+
+                        });
+                        setApplications(res.data.data);
+                    }
+                    
                 }
             } catch (err) {
                 console.error('Error retrieving applications:', err)
@@ -79,33 +99,50 @@ const Home = () => {
 
     const extractDomain = (url) => {
         try {
-            const { hostname } = new URL(url)
-            return hostname
+            // Ensure the URL has a protocol; if not, add "https://"
+            const validUrl = url.includes('://') ? url : `https://${url}`;
+            const { hostname } = new URL(validUrl);
+            return hostname;
         } catch (error) {
-            console.error("Invalid URL:", url)
-            return ""
+            console.error("Invalid URL:", url);
+            return "";
         }
     }
 
-    const addApplication = () => {
+    const addApplication = async () => {
         if (
             newApplication.name &&
             newApplication.company &&
             newApplication.date &&
             newApplication.status
         ) {
-            // TODO: make API request to save the new application
-            setApplications([...applications, { ...newApplication }])
-            setNewApplication({
-                name: "",
-                company: "",
-                date: "",
-                status: "",
-                statusColor: "",
-                webpage: "",
-                notes: "",
-            })
-            setIsAdding(false)
+            try {
+                // TODO: make API request to save the new application
+                const name = newApplication.name;
+                const company = newApplication.company;
+                const date = newApplication.date;
+                const status = newApplication.status;
+                const webpage = newApplication.webpage;
+                const notes = newApplication.notes;
+                const res = await axios.post(`${API_BASE_URL}/application`, {username:username, name:name, date:date, company:company, status:status, webpage:webpage, notes:notes})
+                if (res.status === 201) {
+                    setApplications([...applications, { ...newApplication }])
+                    setNewApplication({
+                        name: "",
+                        company: "",
+                        date: "",
+                        status: "",
+                        statusColor: "",
+                        webpage: "",
+                        notes: "",
+                    })
+                    setIsAdding(false)
+                }
+            } catch (err) {
+                console.error('Error retrieving applications:', err)
+            }
+            
+            
         } else {
             alert("Please fill in all required fields")
         }
@@ -122,6 +159,9 @@ const Home = () => {
         })
     }
     const deleteApplication = (index) => {
+        // const res = await axios.delete(`${API_BASE_URL}/application`, {
+        //     params: { username: username }
+        // });
         // Remove the application from the list
         setApplications(applications.filter((_, i) => i !== index))
         // TODO: make API request to delete the application
@@ -177,7 +217,15 @@ const Home = () => {
     }
 
     return (
+        <div>
+        <div style={headerContainerStyle}>
+            <h1 style={{ margin: "20px" }}>JobTracker</h1>
+            <button style={{ margin: "20px" }} onClick={logOut}>
+            Log Out
+            </button>
+        </div>
         <div className="home-container">
+            <button className="save-button" onClick={navigateToProfile}>Profile</button>
             <table className="table">
                 <thead>
                     <tr>
@@ -389,10 +437,7 @@ const Home = () => {
                                     onChange={(e) =>
                                         setNewApplication({
                                             ...newApplication,
-                                            webpage: {
-                                                ...newApplication.webpage,
-                                                link: e.target.value,
-                                            },
+                                            webpage: e.target.value, // Set the value directly as a string
                                         })
                                     }
                                 />
@@ -420,7 +465,16 @@ const Home = () => {
                 </tbody>
             </table>
         </div>
+        </div>
     )
 }
+const headerContainerStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    backgroundColor: '#4285f4',
+    alignItems: "center",
+    padding: "10px 0",
+    borderBottom: "1px solid #ddd",
+  };
 
 export default Home

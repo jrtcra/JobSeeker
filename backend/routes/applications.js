@@ -9,10 +9,17 @@ module.exports = function(router) {
     router.route('/applications').get(async(req, res) => {
         try {
             // Assuming auth middleware sets req.user
-            const userId = req.user.id;
-            
+            // const userId = req.user.id;
+            const { username } = req.query;
+            const user = await User.findOne({ username });
+            if (!user) {
+                console.log("Couldn't find user");
+                return res.status(401).send(formatResponse("Couldn't find user", null));
+            }
+            console.log(user._id);
             // Find all applications assigned to this user
-            const applications = await Application.find({ assignedUser: userId });
+            const applications = await Application.find({ assignedUser: user._id });
+            // console.log("APPLICATIONS: " + applications);
             res.status(200).send(formatResponse("Successfully retrieved applications", applications));
         } catch(error) {
             res.status(500).send(formatResponse("Error retrieving applications", error));
@@ -22,25 +29,31 @@ module.exports = function(router) {
     // POST a new job application
     router.route('/application').post(async(req, res) => {
         try {
+            const { username, name, date, company, status, webpage, notes } = req.body;
+            const user = await User.findOne({ username });
+            if (!user) {
+                console.log("Couldn't find user");
+                return res.status(401).send(formatResponse("Couldn't find user", null));
+            }
             // Assuming auth middleware sets req.user
-            const userId = req.user.id;
-            const { name, company, status, link, notes } = req.body;
+            
 
             // Create new application
             const application = new Application({
                 name,
                 company,
                 status,
-                link,
+                webpage,
                 notes,
-                assignedUser: userId
+                date,
+                assignedUser: user._id
             });
 
             // Save the application
             await application.save();
 
             // Update user's applications array and statistics
-            await User.findByIdAndUpdate(userId, {
+            await User.findByIdAndUpdate(user._id, {
                 $push: { applications: application._id },
                 $inc: { 'statistics.totalApplications': 1 },
                 $set: { 'statistics.lastUpdated': new Date() }
@@ -48,6 +61,7 @@ module.exports = function(router) {
 
             res.status(201).send(formatResponse("Successfully created application", application));
         } catch(error) {
+            console.log(error);
             res.status(500).send(formatResponse("Error creating application", error));
         }
     });
