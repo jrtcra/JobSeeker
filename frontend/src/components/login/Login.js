@@ -18,7 +18,7 @@ const Login = () => {
         e.preventDefault()
 
         try {
-            const res = await axios.post(`${API_BASE_URL}/user/login`, { username, password })
+            const res = await axios.post(`job-seeker-backend.vercel.app/api/user/login`, { username, password })
             if (res.status === 200) {
                 console.log('Login successful')
 

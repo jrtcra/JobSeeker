@@ -73,7 +73,7 @@ const Home = ({ username }) => {
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const res = await axios.get(`${API_BASE_URL}/applications`, { params: { username } })
+                const res = await axios.get(`job-seeker-backend.vercel.app/api/applications`, { params: { username } })
 
                 if (res.status === 200) {
                     console.log(res.data.data);
@@ -125,7 +125,7 @@ const Home = ({ username }) => {
                 const status = newApplication.status;
                 const webpage = newApplication.webpage;
                 const notes = newApplication.notes;
-                const res = await axios.post(`${API_BASE_URL}/application`, {username:username, name:name, date:date, company:company, status:status, webpage:webpage, notes:notes})
+                const res = await axios.post(`job-seeker-backend.vercel.app/api/application`, {username:username, name:name, date:date, company:company, status:status, webpage:webpage, notes:notes})
                 if (res.status === 201) {
                     setApplications([...applications, { ...newApplication }])
                     setNewApplication({
@@ -161,7 +161,7 @@ const Home = ({ username }) => {
     }
     const deleteApplication = async (index)  => {
         const app_id = applications[index]._id;
-        const res = await axios.delete(`${API_BASE_URL}/application`, {
+        const res = await axios.delete(`job-seeker-backend.vercel.app/api/application`, {
             params: { username , app_id}
         });
         console.log(applications[index]._id);

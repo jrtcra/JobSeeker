@@ -26,7 +26,7 @@ const Profile = () => {
                 //     withCredentials: true,
                 // });
                 console.log(username);
-                const res = await axios.get(`${API_BASE_URL}/user/profile`, { params: { username } });
+                const res = await axios.get(`job-seeker-backend.vercel.app/api/user/profile`, { params: { username } });
 
                 if (res.status !== 200) {
                     navigate('/login')
@@ -64,7 +64,7 @@ const Profile = () => {
             //     { withCredentials: true }
             // );
             const res = await axios.patch(
-                `${API_BASE_URL}/user`,
+                `job-seeker-backend.vercel.app/api/user`,
                 { original_username: username, new_info:{username: formData.username, email: formData.email} }
             );
 
