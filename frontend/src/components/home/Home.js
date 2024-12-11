@@ -35,6 +35,46 @@ const testApplications = [
         date: "2024-10-20",
     },
     {
+        name: "Frontend Developer",
+        company: "Netflix",
+        date: "2024-11-25",
+        status: "Interview Scheduled",
+        statusColor: StatusOptions.find(option => option.value === "Interview Scheduled")?.color,
+        webpage: "https://jobs.netflix.com/"
+    },
+    {
+        name: "Backend Engineer",
+        company: "Oracle",
+        date: "2024-12-05",
+        status: "Applied",
+        statusColor: StatusOptions.find(option => option.value === "Applied")?.color,
+        webpage: "https://www.oracle.com/corporate/careers/"
+    },
+    {
+        name: "Full Stack Developer",
+        company: "Adobe",
+        date: "2024-10-18",
+        status: "Rejected",
+        statusColor: StatusOptions.find(option => option.value === "Rejected")?.color,
+        webpage: "https://adobe.wd5.myworkdayjobs.com/en-US/external_experienced"
+    },
+    {
+        name: "Mobile Developer",
+        company: "Samsung",
+        date: "2024-10-30",
+        status: "Applied",
+        statusColor: StatusOptions.find(option => option.value === "Applied")?.color,
+        webpage: "https://sec.wd3.myworkdayjobs.com/en-US/Samsung_Careers"
+    },
+    {
+        name: "Cloud Engineer",
+        company: "Microsoft",
+        date: "2024-11-12",
+        status: "Offered",
+        statusColor: StatusOptions.find(option => option.value === "Offered")?.color,
+        webpage: "https://careers.microsoft.com/"
+    },
+    {
         name: "Security Intern",
         company: "CrowdStrike",
         status: "Applied",
@@ -203,7 +243,7 @@ const Home = () => {
     const filteredApplications = applications.filter((app) => {
         const matchesSearch = searchQuery
             ? app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              app.company.toLowerCase().includes(searchQuery.toLowerCase())
+            app.company.toLowerCase().includes(searchQuery.toLowerCase())
             : true
         const matchesStatus = filterStatus ? app.status === filterStatus : true
         return matchesSearch && matchesStatus
@@ -213,18 +253,18 @@ const Home = () => {
         <div className="home-container">
             <h1 className="component-title">My Job Applications</h1>
             <input
-                    type="text"
-                    placeholder="Search by Job Title or Company Name"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="search-input"
-                />
+                type="text"
+                placeholder="Search by Job Title or Company Name"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+            />
             <table className="table">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Company</th>
-                        <th>
+                        <th style={{ width: '120px' }}>
                             Date Applied
                             <button
                                 onClick={sortApplicationsByDate}
@@ -279,7 +319,7 @@ const Home = () => {
                                 )}
                             </div>
                         </th>
-                        <th>Webpage</th>
+                        <th>Webpage URL</th>
                         <th>Notes</th>
                         <th>Actions</th>
                     </tr>
