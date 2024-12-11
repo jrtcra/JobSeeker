@@ -20,8 +20,8 @@ const Signup = () => {
         e.preventDefault()
 
         try {
-            const res = await axios.post(`job-seeker-backend.vercel.app/api/user/register`, { username, email, password })
-            console.log(`${API_BASE_URL}/register`);
+            const res = await axios.post(`https://job-seeker-backend.vercel.app/api/user/register`, { username, email, password })
+            // console.log(`${API_BASE_URL}/register`);
             if (res.status === 201) {
                 console.log('Signup successful')
                 navigate('/login') // Redirect to login after successful signup

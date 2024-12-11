@@ -28,7 +28,7 @@ const HomePage = () => {
     const fetchApplications = async () => {
       try {
           
-          const res = await axios.get(`job-seeker-backend.vercel.app/api/applications`, { params: { username } })
+          const res = await axios.get(`https://job-seeker-backend.vercel.app/api/applications`, { params: { username } })
           
           if (res.status === 200) {
               setApplications(res.data.data)
