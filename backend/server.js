@@ -29,9 +29,16 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+// Add a test route
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'API is working!' });
+});
+
 // Use routes as a module (see index.js)
 require('./routes')(app, router);
 
 // Start the server
 app.listen(port);
 console.log('Server running on port ' + port);
+
+module.exports = app;
