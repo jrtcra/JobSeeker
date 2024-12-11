@@ -27,6 +27,15 @@
     background-color: #f1f1f1;
 }
 
+@media (max-width: 768px) {
+    .table th,
+    .table td {
+        font-size: 0.9rem; /* Reduce font size for smaller screens */
+        padding: 6px; /* Adjust padding to save space */
+        white-space: nowrap;
+    }
+}
+
 .status-span {
     padding: 5px 10px;
     border-radius: 5px;

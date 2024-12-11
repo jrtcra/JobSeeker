@@ -102,6 +102,7 @@ const LineChart = ({ applications }) => {
         style={{
           display: "flex",
           justifyContent: "center",
+          flexWrap: "wrap",
           marginBottom: "20px",
           gap: "15px",
         }}
